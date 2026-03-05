@@ -216,4 +216,3 @@ runs/
 
 # Local env
 .env
-.env.*

@@ -32,8 +32,8 @@ Research Question -> Planner -> Tool registry (literature retrieval, paper extra
 
 Getting Started (Windows):
 1. Clone Repo
-'''
-```git clone https://github.com/<your-username>/clinical-ml-agent.git```
+
+```git clone https://github.com/<your-username>/clinical-ml-agent.git \n```
 ```cd clinical-ml-agent```
 
 2. Create Virtual Environment
@@ -54,7 +54,7 @@ The system will generate:
 ├── report.md
 ├── trace.json
 ├── retrieved.json
-└── extractions.jsonl```
+└── extractions.json
 
 Disclaimer:
 This system is a research analysis tool. It does *not* provide clinical recommendations or medical advice.
