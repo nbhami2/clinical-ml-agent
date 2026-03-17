@@ -1,28 +1,27 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from src.ingest.chunk import TextChunk
 
 load_dotenv()
 
-genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
+client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
 
-EMBEDDING_MODEL = "models/text-embedding-004"
+EMBEDDING_MODEL = "text-embedding-004"
 
 
 def embed_text(text: str) -> list[float]:
     """Embed a single string using Gemini embedding model."""
-    result = genai.embed_content(
+    result = client.models.embed_content(
         model=EMBEDDING_MODEL,
-        content=text,
-        task_type="retrieval_document",
+        contents=text,
     )
-    return result["embedding"]
+    return result.embeddings[0].values
 
 
 def embed_chunks(chunks: list[TextChunk]) -> list[dict]:

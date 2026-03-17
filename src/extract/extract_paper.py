@@ -4,21 +4,13 @@ import json
 import os
 
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
 
-from src.extract.schema import (
-    PaperExtraction,
-    Citation,
-    Population,
-    DataInfo,
-    Modeling,
-    Validation,
-    Metrics,
-    FairnessInfo,
-)
+from src.extract.schema import PaperExtraction
 
 load_dotenv()
-genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
+
+client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
 
 MODEL = "gemini-2.0-flash"
 
@@ -99,13 +91,13 @@ def extract_paper(paper_text: str, max_chars: int = 12000) -> PaperExtraction:
     Returns:
         PaperExtraction pydantic model
     """
-    # Truncate to avoid hitting token limits - focus on beginning/methods/results
     truncated = paper_text[:max_chars]
-
     prompt = EXTRACTION_PROMPT.format(paper_text=truncated)
 
-    model = genai.GenerativeModel(MODEL)
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=prompt,
+    )
 
     raw = response.text.strip()
 
