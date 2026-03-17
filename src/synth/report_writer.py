@@ -16,7 +16,7 @@ load_dotenv()
 
 client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
 
-MODEL = "gemini-2.0-flash"
+MODEL = "models/gemini-2.0-flash"
 
 SYNTHESIS_PROMPT = """
 You are an expert clinical ML researcher writing a structured evidence synthesis report.

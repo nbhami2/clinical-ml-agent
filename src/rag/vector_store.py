@@ -17,7 +17,7 @@ class VectorStore:
         - Metadata list (text, source, chunk_index per entry)
     """
 
-    def __init__(self, dimension: int = 768):
+    def __init__(self, dimension: int = 3072):
         self.dimension = dimension
         self.index = faiss.IndexFlatL2(dimension)
         self.metadata: list[dict] = []

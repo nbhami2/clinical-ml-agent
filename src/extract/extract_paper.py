@@ -12,7 +12,7 @@ load_dotenv()
 
 client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
 
-MODEL = "gemini-2.0-flash"
+MODEL = "models/gemini-2.0-flash-lite"
 
 EXTRACTION_PROMPT = """
 You are an expert clinical ML researcher. Extract structured information from the
@@ -110,15 +110,25 @@ def extract_paper(paper_text: str, max_chars: int = 12000) -> PaperExtraction:
     return PaperExtraction(**data)
 
 
-def extract_paper_safe(paper_text: str) -> tuple[PaperExtraction | None, str | None]:
+def extract_paper_safe(
+    paper_text: str,
+    retries: int = 3,
+    retry_delay: float = 45.0,
+) -> tuple[PaperExtraction | None, str | None]:
     """
-    Safe wrapper around extract_paper.
+    Safe wrapper around extract_paper with retry logic for rate limits.
     Returns (extraction, None) on success or (None, error_message) on failure.
     """
-    try:
-        extraction = extract_paper(paper_text)
-        return extraction, None
-    except json.JSONDecodeError as e:
-        return None, f"JSON parse error: {e}"
-    except Exception as e:
-        return None, f"Extraction failed: {e}"
+    import time
+    for attempt in range(1, retries + 1):
+        try:
+            extraction = extract_paper(paper_text)
+            return extraction, None
+        except Exception as e:
+            error_str = str(e)
+            if "429" in error_str and attempt < retries:
+                print(f"    Rate limited. Waiting {retry_delay}s before retry {attempt}/{retries - 1}...")
+                time.sleep(retry_delay)
+            else:
+                return None, f"Extraction failed: {e}"
+    return None, "Extraction failed after all retries."
